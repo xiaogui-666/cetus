@@ -440,3 +440,33 @@
     max-width: 100%;
   }
 }
+
+/* 称呼输入：整行输入框 + 一行说明 */
+.nameInput {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--dsw-alias-border-l3);
+  border-radius: 10px;
+  outline: none;
+  background-color: var(--dsw-alias-bg-base);
+  color: inherit;
+  font: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.nameInput::placeholder {
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nameInput:focus {
+  border-color: var(--dsw-alias-brand-primary);
+}
+
+.nameHint {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-tertiary);
+}

@@ -251,3 +251,12 @@ body {
 
   --dsw-font-xs-13: 13px/20px var(--dsw-font-family);
 }
+
+/* Cetus 品牌图标：浅色主题用墨蓝，深色主题翻成白 —— 图标本身只写 currentColor */
+:root {
+  --cetus-logo-color: #0f2945;
+}
+
+body[data-ds-dark-theme] {
+  --cetus-logo-color: #ffffff;
+}

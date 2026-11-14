@@ -14,7 +14,10 @@ export const en = {
     'Chats or attachments have not been saved locally. Retry before closing this page.',
   sessionDeleteFailed: 'Unable to delete this chat. Please try again.',
   settings: 'Settings',
-  appName: 'API usage demo',
+  appName: 'Cetus',
+  settingsUserName: 'Your name',
+  settingsUserNamePlaceholder: 'Leave empty to stay anonymous',
+  settingsUserNameHint: 'Used to greet you on the home screen. Stored only on this device.',
   deleteSessionModalContentTitle: 'Delete chat?',
   deleteSessionWithFilesDescription:
     'This chat and its uploaded files will be permanently deleted and cannot be recovered. Delete this chat?',

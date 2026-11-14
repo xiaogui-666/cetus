@@ -16,11 +16,26 @@
   padding: 0 32px 64px;
 }
 
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 21px;
+}
+
+.logo {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 18px;
+  /* 浅色主题为深墨蓝，深色主题由 theme.css 翻成浅色 —— 一份 SVG 适配两套主题 */
+  color: var(--cetus-logo-color, currentColor);
+}
+
 .greeting {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 21px;
   font-size: 24px;
   line-height: 32px;
   font-weight: 600;
@@ -50,9 +65,19 @@
     padding: 0 16px env(safe-area-inset-bottom);
   }
 
-  .greeting {
+  .hero {
     flex-shrink: 0;
     margin: auto 0;
+  }
+
+  .logo {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 14px;
+  }
+
+  .greeting {
+    flex-shrink: 0;
   }
 
   .caveat {

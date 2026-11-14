@@ -24,6 +24,7 @@ import {
   setLocation,
   setThemePreference,
   setTtsVoice,
+  setUserName,
   useSettings,
   type ThemePreference,
 } from '../../services/settings.js'
@@ -96,6 +97,7 @@ const SettingsContent = () => {
         <div role="tabpanel" className={styles.content}>
           {section === 'general' ? (
             <>
+              <UserNameSetting />
               <ThemeSetting />
               <LocaleSetting />
               <TtsVoiceSetting />
@@ -364,6 +366,31 @@ const themeOptions: { value: ThemePreference; label: TranslationKey; icon: React
  * 主题项：标题下方浅色 / 深色 / 跟随系统三个选块。
  * 与下方语言选项连续排列。
  */
+/** 首页问候用的称呼：只存在本机，留空就匿名问候 */
+const UserNameSetting = () => {
+  const t = useTranslate()
+  const userName = useSettings((state) => state.userName)
+  return (
+    <div className={styles.cell}>
+      <label className={styles.label} htmlFor="cetus-user-name">
+        {t('settingsUserName')}
+      </label>
+      <input
+        id="cetus-user-name"
+        className={styles.nameInput}
+        type="text"
+        value={userName}
+        placeholder={t('settingsUserNamePlaceholder')}
+        maxLength={24}
+        autoComplete="nickname"
+        spellCheck={false}
+        onChange={(event) => setUserName(event.target.value)}
+      />
+      <div className={styles.nameHint}>{t('settingsUserNameHint')}</div>
+    </div>
+  )
+}
+
 const ThemeSetting = () => {
   const t = useTranslate()
   const themePreference = useSettings((state) => state.themePreference)
