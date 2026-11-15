@@ -4,8 +4,8 @@
  * 声明 deepseek_web_search / deepseek_read_url 或设置 safety_check.level 为 high 时进入扩展模式。
  */
 
-/** 内置模型保留补全提示，同时允许自定义供应商返回任意模型名 */
-export type ChatModel = 'deepseek-flash' | 'deepseek-v4-pro' | (string & {})
+/** 模型 id。内置清单在 services/providers.ts，这里放宽以支持自定义供应商的任意模型名 */
+export type ChatModel = string
 
 // ---------- 响应：内容块 ----------
 
