@@ -66,6 +66,8 @@ export const en = {
   nicknameGateSkip: 'Skip for now',
   settingsUserName: 'Your name',
   settingsTitleModel: 'Title model',
+  settingsSpeechProvider: 'Speech service',
+  settingsSpeechProviderFollow: 'Follow chat provider',
   settingsTitleModelFollow: 'Follow chat model',
   settingsUserNamePlaceholder: 'Leave empty to stay anonymous',
   settingsUserNameHint: 'Used to greet you on the home screen. Stored only on this device.',

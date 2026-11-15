@@ -62,6 +62,8 @@ export const zh = {
   nicknameGateSkip: '先跳过',
   settingsUserName: '你的称呼',
   settingsTitleModel: '标题总结模型',
+  settingsSpeechProvider: '语音服务',
+  settingsSpeechProviderFollow: '跟随对话供应商',
   settingsTitleModelFollow: '跟随当前模型',
   settingsUserNamePlaceholder: '留空则匿名问候',
   settingsUserNameHint: '首页问候会用这个名字称呼你，只保存在本机。',

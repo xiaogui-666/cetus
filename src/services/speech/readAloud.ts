@@ -4,7 +4,7 @@ import { ApiError } from '../api/client.js'
 import { classifyApiError } from '../api/errors.js'
 import { synthesize, TTS_SAMPLE_RATE } from '../api/speech.js'
 import { useSettings } from '../settings.js'
-import { currentApiKey } from '../providers.js'
+import { toolApiKey } from '../providers.js'
 
 /**
  * 朗读：同一时间只读一条回复。
@@ -100,7 +100,7 @@ export const toggleReadAloud = (
     let lastSource: AudioBufferSourceNode | null = null
     let rest = new Uint8Array(0)
     try {
-      const stream = await synthesize(currentApiKey(), text, ttsVoice, controller.signal)
+      const stream = await synthesize(toolApiKey(), text, ttsVoice, controller.signal)
       const reader = stream.getReader()
       controller.signal.addEventListener('abort', () => void reader.cancel().catch(() => {}))
       for (;;) {

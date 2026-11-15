@@ -24,6 +24,7 @@ import {
   setLocale,
   setLocation,
   setThemePreference,
+  setSpeechProviderId,
   setTitleModel,
   setTtsVoice,
   setUserName,
@@ -110,6 +111,7 @@ const SettingsContent = () => {
               <TitleModelSetting />
               <ThemeSetting />
               <LocaleSetting />
+              <SpeechProviderSetting />
               <TtsVoiceSetting />
               <LocationSetting />
             </>
@@ -423,6 +425,30 @@ const TitleModelSetting = () => {
             ...provider.models.map((model) => ({ value: model.id, label: model.name })),
           ]}
           onChange={(value) => setTitleModel(value || null)}
+        />
+      }
+    />
+  )
+}
+
+/** 语音服务供应商：ASR / TTS 是 DeepSeek 专有端点，可单独指定 */
+const SpeechProviderSetting = () => {
+  const t = useTranslate()
+  const speechProviderId = useSettings((state) => state.speechProviderId)
+  const providers = useProviders((state) => state.providers)
+  return (
+    <SettingCell
+      label={t('settingsSpeechProvider')}
+      status={null}
+      action={
+        <Select
+          ariaLabel={t('settingsSpeechProvider')}
+          value={speechProviderId ?? ''}
+          options={[
+            { value: '', label: t('settingsSpeechProviderFollow') },
+            ...providers.map((provider) => ({ value: provider.id, label: provider.name })),
+          ]}
+          onChange={(value) => setSpeechProviderId(value || null)}
         />
       }
     />

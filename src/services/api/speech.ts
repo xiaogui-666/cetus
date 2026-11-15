@@ -1,12 +1,16 @@
-import { ApiError, apiOrigin, request } from './client.js'
+import { ApiError, request } from './client.js'
+import { toolApiOrigin } from '../providers.js'
 
 /**
  * 语音接口：
  * - ASR：POST /v1/tools/asr，multipart 上传 WAV / Ogg Opus，一次返回全文
  * - TTS：POST /v1/tools/tts，返回音频字节流（产出首帧后即返回 200）
  * 鉴权都用 Authorization: Bearer。
+ *
+ * 地址取自「语音供应商」而不是对话供应商：这两个端点是 DeepSeek 专有的，
+ * 对话用第三方中转时仍然应该打到 DeepSeek 官方。
  */
-const toolsBaseUrl = (): string => `${apiOrigin()}/v1/tools`
+const toolsBaseUrl = (): string => `${toolApiOrigin()}/v1/tools`
 
 export type TtsVoice = 'stella' | 'tide'
 

@@ -29,6 +29,8 @@ type Settings = {
   model: string | null
   /** 生成会话标题用的模型；null 时跟随回复所用的模型 */
   titleModel: string | null
+  /** 语音识别与朗读用的供应商 id；null 时跟随当前对话供应商 */
+  speechProviderId: string | null
 }
 
 const KEYS = {
@@ -122,6 +124,7 @@ export const useSettings = create<Settings>(() => ({
   siderCollapsed: read(KEYS.siderCollapsed) === 'true',
   model: read(KEYS.model) || null,
   titleModel: read(KEYS.titleModel) || null,
+  speechProviderId: read(KEYS.speechProviderId) || null,
 }))
 
 export const setLocale = (locale: Locale) => {

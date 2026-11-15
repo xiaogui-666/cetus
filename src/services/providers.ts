@@ -239,3 +239,26 @@ export const findModel = (id: string | null): ModelConfig | undefined =>
 
 /** 当前供应商的第一个模型；没配模型时返回空串，由调用方决定怎么提示 */
 export const defaultModelId = (): string => getActiveModels()[0]?.id ?? ''
+
+/**
+ * 语音这类「工具能力」用的供应商。
+ *
+ * ASR / TTS 走的是 `{origin}/v1/tools/...`，是 DeepSeek 专有的端点，跟对话用哪个
+ * 供应商无关 —— 所以允许单独指定一个（通常就是 DeepSeek 官方），没指定时跟随当前供应商。
+ */
+export const getToolProvider = (): Provider => {
+  const { providers, activeId } = useProviders.getState()
+  const configured = useSettings.getState().speechProviderId
+  if (configured) {
+    const found = providers.find((provider) => provider.id === configured)
+    if (found) {
+      return found
+    }
+  }
+  return providers.find((provider) => provider.id === activeId) ?? providers[0]
+}
+
+export const toolApiKey = (): string => getToolProvider().apiKey
+
+export const toolApiOrigin = (): string =>
+  getToolProvider().baseUrl.trim().replace(/\/+$/, '') || 'https://api.deepseek.com'
