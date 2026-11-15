@@ -112,13 +112,19 @@ const anthropicHeaders = (apiKey: string, beta: boolean): Record<string, string>
   ...(beta ? { 'anthropic-beta': FILES_BETA } : {}),
 })
 
-/** 用 GET /models 校验 API Key（不产生费用） */
+/**
+ * OpenAI Chat Completions 端点。
+ * 用户可能填根地址（各家文档的推荐写法），也可能已经带了 `/v1`；
+ * 这里统一补到 `/v1`，避免根地址拼出 `root/chat/completions` 这种 404 路径。
+ */
+export const openaiChatUrl = (): string => {
+  const base = apiOrigin()
+  return /\/v\d+$/i.test(base) ? `${base}/chat/completions` : `${base}/v1/chat/completions`
+}
+
+/** 用 GET /models 校验 API Key（不产生费用）；与拉取模型用同一套候选路径 */
 export const verifyApiKey = async (apiKey: string, signal?: AbortSignal): Promise<void> => {
-  await request(`${apiOrigin()}/models`, {
-    method: 'GET',
-    headers: { Authorization: `Bearer ${apiKey}` },
-    signal,
-  })
+  await fetchModels(getActiveProvider().baseUrl, apiKey, signal)
 }
 
 /**

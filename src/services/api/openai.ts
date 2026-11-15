@@ -1,4 +1,4 @@
-import { apiOrigin, ApiError, request } from './client.js'
+import { ApiError, openaiChatUrl, request } from './client.js'
 import { readServerSentEvents } from './sse.js'
 import type { CreateMessageRequest, MessageStreamEvent, MessageUsage, StopReason } from './types.js'
 

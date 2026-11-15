@@ -51,6 +51,10 @@ export const en = {
   thinkingReset: 'Reset',
   back: 'Back',
   settingsModel: 'Model',
+  modelNotConfigured: 'No model',
+  modelNotConfiguredHint:
+    'This provider has no models yet. Open settings and fetch the model list, or add one manually.',
+  modelGoSettings: 'Open settings',
   introTitle: 'Cetus',
   introBody:
     'An AI chat client that needs no account.\n\nBring your own API key, chat, leave. No sign-up, no cloud sync, no analytics — every conversation stays on this device, and deleting it really deletes it.\n\nWeb search, link reading, file input, voice and reasoning are capabilities the official API already has. This app just puts a UI on them.\n\nNovember 2026. Version one.',

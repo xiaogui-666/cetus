@@ -47,7 +47,8 @@ export const ModelThinkingControl = ({ sessionId }: { sessionId: string | null }
   const providers = useProviders((state) => state.providers)
   const activeId = useProviders((state) => state.activeId)
   const provider = providers.find((item) => item.id === activeId) ?? providers[0]
-  const models = provider.models.length > 0 ? provider.models : FALLBACK_MODELS
+  // 不再硬塞 DeepSeek 兜底：没配模型就明确告诉用户去设置里拉取
+  const models = provider.models
 
   const thinking = useSettings((state) => state.thinking)
   const level = useSettings((state) => state.thinkingLevel)
@@ -60,6 +61,7 @@ export const ModelThinkingControl = ({ sessionId }: { sessionId: string | null }
   )
   const currentId = session?.model ?? preferred
   const currentModel = models.find((model) => model.id === currentId) ?? models[0]
+  const currentName = currentModel?.name ?? t('modelNotConfigured')
   const index = THINKING_LEVELS.indexOf(level)
   const stop = thinking ? index + 1 : 0
   const percent = (stop / STOPS) * 100
@@ -147,7 +149,7 @@ export const ModelThinkingControl = ({ sessionId }: { sessionId: string | null }
         onClick={() => setOpen((value) => !value)}
       >
         <IconThinkOutline14 />
-        <span className={styles.pillModel}>{currentModel.name}</span>
+        <span className={styles.pillModel}>{currentName}</span>
         <span className={styles.pillDot} aria-hidden="true">
           ·
         </span>
@@ -187,7 +189,7 @@ export const ModelThinkingControl = ({ sessionId }: { sessionId: string | null }
                         className={styles.modelSwitch}
                         onClick={() => setView('models')}
                       >
-                        <span className={styles.modelSwitchName}>{currentModel.name}</span>
+                        <span className={styles.modelSwitchName}>{currentName}</span>
                         <svg viewBox="0 0 10 12" aria-hidden="true">
                           <path
                             d="M3 2l4 4-4 4"
@@ -294,15 +296,30 @@ export const ModelThinkingControl = ({ sessionId }: { sessionId: string | null }
                   </div>
                   <div className={styles.groupLabel}>{provider.name}</div>
                   <div className={styles.list}>
+                    {models.length === 0 ? (
+                      <div className={styles.empty}>
+                        <p className={styles.emptyText}>{t('modelNotConfiguredHint')}</p>
+                        <button
+                          type="button"
+                          className={styles.emptyAction}
+                          onClick={() => {
+                            setOpen(false)
+                            openSettings('provider')
+                          }}
+                        >
+                          {t('modelGoSettings')}
+                        </button>
+                      </div>
+                    ) : null}
                     {models.map((model) => (
                       <button
                         key={model.id}
                         type="button"
                         role="option"
-                        aria-selected={model.id === currentModel.id}
+                        aria-selected={model.id === currentModel?.id}
                         className={clsx(
                           styles.option,
-                          model.id === currentModel.id && styles.optionActive
+                          model.id === currentModel?.id && styles.optionActive
                         )}
                         onClick={() => {
                           // 记成全局默认（新对话沿用），当前会话也立刻切过去
@@ -314,7 +331,7 @@ export const ModelThinkingControl = ({ sessionId }: { sessionId: string | null }
                         }}
                       >
                         <span className={styles.optionName}>{model.name}</span>
-                        {model.id === currentModel.id ? (
+                        {model.id === currentModel?.id ? (
                           <svg className={styles.check} viewBox="0 0 24 24" aria-hidden="true">
                             <polyline
                               points="20 6 9 17 4 12"

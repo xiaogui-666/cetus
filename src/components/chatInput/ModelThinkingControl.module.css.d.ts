@@ -32,6 +32,9 @@ declare const styles: {
   readonly "groupLabel": string;
   readonly "list": string;
   readonly "option": string;
+  readonly "empty": string;
+  readonly "emptyText": string;
+  readonly "emptyAction": string;
   readonly "optionActive": string;
   readonly "optionName": string;
   readonly "check": string;
