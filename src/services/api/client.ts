@@ -12,13 +12,30 @@ import type {
 import { getActiveProvider, normalizeBaseUrl } from '../providers.js'
 
 /**
- * 当前供应商的 API 根地址（已归一化，去掉末尾斜杠与误填的 /v1、/anthropic）。
- * 每次请求实时读取，切换供应商后无需刷新页面。
+ * 当前供应商的 API 根地址，**原样保留**用户填写的路径（去掉末尾斜杠）。
+ *
+ * 这里刻意不做 /v1 剥离：很多中转的 base 就是 `.../v1`，剥掉会拿到 404 或直接
+ * 被网关断开，表现为"网络异常"。只有 Anthropic 端点需要特殊拼接，见 anthropicBaseUrl。
  */
 export const apiOrigin = (): string =>
-  normalizeBaseUrl(getActiveProvider().baseUrl) || 'https://api.deepseek.com'
-/** Anthropic 兼容接口的前缀 */
-const anthropicBaseUrl = (): string => `${apiOrigin()}/anthropic/v1`
+  getActiveProvider().baseUrl.trim().replace(/\/+$/, '') || 'https://api.deepseek.com'
+
+/**
+ * Anthropic 兼容接口前缀。
+ * - base 已经是 `.../anthropic/v1` → 直接用
+ * - base 是 `.../anthropic` → 补 `/v1`
+ * - 其余（含 DeepSeek 的根地址）→ 追加 `/anthropic/v1`
+ */
+const anthropicBaseUrl = (): string => {
+  const base = apiOrigin()
+  if (/\/anthropic\/v1$/i.test(base)) {
+    return base
+  }
+  if (/\/anthropic$/i.test(base)) {
+    return `${base}/v1`
+  }
+  return `${base}/anthropic/v1`
+}
 /** 引用 Files API 上传的图片、调用 Anthropic 兼容 Files API 时必须携带 */
 const FILES_BETA = 'files-api-2025-04-14'
 
