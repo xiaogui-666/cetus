@@ -202,7 +202,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
       <div className={styles.functionRow}>
         {/* 深度思考 / 智能搜索开关，tooltip 在按钮上方 */}
         <div ref={togglesRef} className={styles.toggles}>
-          <ModelThinkingControl />
+          <ModelThinkingControl sessionId={sessionId} />
           <Tooltip content={t('deactivatedSearchTooltip')}>
             <button
               type="button"

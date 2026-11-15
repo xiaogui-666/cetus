@@ -174,6 +174,18 @@ const updateSession = (id: string, update: (session: Session) => Session) =>
     }
   })
 
+/** 切换会话使用的模型；null 表示回落到全局默认 */
+export const setSessionModel = (sessionId: string, model: string | null) => {
+  updateSession(sessionId, (session) => (session.model === model ? session : { ...session, model }))
+}
+
+/** 切换会话标题使用的模型；null 表示跟随回复用的模型 */
+export const setSessionTitleModel = (sessionId: string, titleModel: string | null) => {
+  updateSession(sessionId, (session) =>
+    session.titleModel === titleModel ? session : { ...session, titleModel }
+  )
+}
+
 const updateReply = (sessionId: string, reply: AssistantMessage) =>
   updateSession(sessionId, (session) => ({
     ...session,
@@ -259,13 +271,15 @@ export const bindChatPersistence = () => {
 }
 
 /** 按当前开关创建回复：深度思考对应 thinking，智能搜索控制 deepseek_web_search。 */
-const createReply = (): AssistantMessage => {
+const createReply = (sessionId?: string): AssistantMessage => {
   const { thinking, search } = useSettings.getState()
+  // 会话自己的模型优先，没设过就取全局默认
+  const sessionModel = sessionId ? getSession(sessionId)?.model : null
   return {
     id: createId(),
     role: 'assistant',
     createdAt: Date.now(),
-    model: defaultModelId(),
+    model: sessionModel ?? defaultModelId(),
     thinking,
     search,
     prefix: true,
@@ -575,6 +589,9 @@ export const sendMessage = (targetSessionId: string | null) => {
       updatedAt: now,
       messages: [],
       rootMessageId: null,
+      // 新会话继承当前的全局模型设置，之后可以单独改
+      model: useSettings.getState().model,
+      titleModel: useSettings.getState().titleModel,
     }
     sessionId = session.id
     touchSession(session.id)
@@ -603,7 +620,7 @@ export const sendMessage = (targetSessionId: string | null) => {
     })),
     createdAt: now,
   }
-  const reply = createReply()
+  const reply = createReply(sessionId)
   updateSession(sessionId, (session) => ({
     ...appendBranch(session, history.at(-1)?.id ?? null, [question, reply]),
     updatedAt: now,
@@ -637,7 +654,7 @@ export const regenerateReply = (sessionId: string, messageId?: string) => {
     return
   }
   const history = path.slice(0, index - 1)
-  const reply = createReply()
+  const reply = createReply(sessionId)
   updateSession(sessionId, (s) => ({
     ...appendBranch(s, question.id, [reply]),
     updatedAt: Date.now(),
@@ -669,7 +686,7 @@ export const editMessage = (sessionId: string, messageId: string, content: strin
     files: previous.files,
     createdAt: Date.now(),
   }
-  const reply = createReply()
+  const reply = createReply(sessionId)
   updateSession(sessionId, (s) => ({
     ...appendBranch(s, path[index - 1]?.id ?? null, [question, reply]),
     updatedAt: Date.now(),
@@ -960,14 +977,61 @@ const waitForRetry = (attempt: number, signal: AbortSignal) =>
   })
 
 /**
+ * 用指定模型单独要一个会话标题：只读流里的 title 字段，拿到就中断。
+ * 标题生成失败不影响对话本身，静默丢弃。
+ */
+const requestSessionTitle = async (sessionId: string, model: string, request: Request) => {
+  const content = request.question.content.trim()
+  if (!content) {
+    return
+  }
+  const controller = new AbortController()
+  try {
+    const events = streamMessage(
+      currentApiKey(),
+      {
+        model,
+        system: systemPrompt(),
+        messages: [{ role: 'user', content }],
+        thinking: { type: 'disabled' },
+        safety_check: SAFETY_CHECK,
+        tools: [],
+        title: { enabled: true },
+      },
+      controller.signal
+    )
+    for await (const event of events) {
+      if (event.type === 'message_delta' && event.delta.title?.trim()) {
+        const title = event.delta.title.trim()
+        updateSession(sessionId, (current) => (current.title ? current : { ...current, title }))
+        persist(sessionId)
+        break
+      }
+    }
+  } catch {
+    // 标题是锦上添花，失败就算了
+  } finally {
+    controller.abort()
+  }
+}
+
+/**
  * 请求并消费流：先补齐附件的 serverId，再发请求；流式增量按动画帧刷新内存，完成、失败或停止后落盘。
  * 补传失败时回复记为 upload 错误，可重试。
  * 服务端判定 file_id 失效时重新补传后重发，退避重试且次数有上限，超过则按原始报错收尾。
  */
 const streamReply = async (sessionId: string, initial: AssistantMessage, request: Request) => {
   const controller = new AbortController()
-  if (!getSession(sessionId)?.title) {
-    titleRequests.add(controller)
+  const session = getSession(sessionId)
+  const replyModel = initial.model ?? defaultModelId()
+  const titleModel = session?.titleModel
+  if (!session?.title) {
+    if (titleModel && titleModel !== replyModel) {
+      // 标题指定了别的模型：主请求不再要标题，另发一个只取标题的短请求
+      void requestSessionTitle(sessionId, titleModel, request)
+    } else {
+      titleRequests.add(controller)
+    }
   }
   set((state) => ({ streaming: { ...state.streaming, [sessionId]: controller } }))
   let reply = initial

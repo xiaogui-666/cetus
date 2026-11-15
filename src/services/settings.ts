@@ -27,6 +27,8 @@ type Settings = {
   siderCollapsed: boolean
   /** 新对话默认使用的模型 id；null 时取当前供应商的第一个模型 */
   model: string | null
+  /** 生成会话标题用的模型；null 时跟随回复所用的模型 */
+  titleModel: string | null
 }
 
 const KEYS = {
@@ -41,6 +43,7 @@ const KEYS = {
   search: 'chat-demo:search',
   siderCollapsed: 'chat-demo:sider-collapsed',
   model: 'chat-demo:model',
+  titleModel: 'chat-demo:title-model',
 } as const
 
 const read = (key: string) => {
@@ -118,6 +121,7 @@ export const useSettings = create<Settings>(() => ({
   search: read(KEYS.search) === 'true',
   siderCollapsed: read(KEYS.siderCollapsed) === 'true',
   model: read(KEYS.model) || null,
+  titleModel: read(KEYS.titleModel) || null,
 }))
 
 export const setLocale = (locale: Locale) => {
@@ -174,4 +178,9 @@ export const setUserName = (userName: string) => {
 export const setModel = (model: string | null) => {
   write(KEYS.model, model)
   useSettings.setState({ model })
+}
+
+export const setTitleModel = (titleModel: string | null) => {
+  write(KEYS.titleModel, titleModel)
+  useSettings.setState({ titleModel })
 }

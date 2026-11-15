@@ -11,6 +11,7 @@ import {
   useSettings,
 } from '../../services/settings.js'
 import { useProviders } from '../../services/providers.js'
+import { setSessionModel, useChatStore } from '../../services/chat/store.js'
 import { useAnchoredPosition, useDismiss } from '../base/anchored.js'
 import { IconThinkOutline14 } from '../base/icons.js'
 import styles from './ModelThinkingControl.module.css'
@@ -36,7 +37,7 @@ const FALLBACK_MODELS = [
  * 第一屏调强度（滑块），点中间的模型名进入第二屏选模型。两块内容共享一个面板，
  * 所以切换时高度变化不会跳位置。
  */
-export const ModelThinkingControl = () => {
+export const ModelThinkingControl = ({ sessionId }: { sessionId: string | null }) => {
   const t = useTranslate()
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<'thinking' | 'models'>('thinking')
@@ -52,7 +53,13 @@ export const ModelThinkingControl = () => {
   const level = useSettings((state) => state.thinkingLevel)
   const preferred = useSettings((state) => state.model)
 
-  const currentModel = models.find((model) => model.id === preferred) ?? models[0]
+  const session = useChatStore((state) =>
+    sessionId !== null && Object.hasOwn(state.sessionCache, sessionId)
+      ? state.sessionCache[sessionId]
+      : undefined
+  )
+  const currentId = session?.model ?? preferred
+  const currentModel = models.find((model) => model.id === currentId) ?? models[0]
   const index = THINKING_LEVELS.indexOf(level)
   const stop = thinking ? index + 1 : 0
   const percent = (stop / STOPS) * 100
@@ -298,7 +305,11 @@ export const ModelThinkingControl = () => {
                           model.id === currentModel.id && styles.optionActive
                         )}
                         onClick={() => {
+                          // 记成全局默认（新对话沿用），当前会话也立刻切过去
                           setModel(model.id)
+                          if (session) {
+                            setSessionModel(session.id, model.id)
+                          }
                           setView('thinking')
                         }}
                       >

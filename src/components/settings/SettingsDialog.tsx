@@ -24,11 +24,13 @@ import {
   setLocale,
   setLocation,
   setThemePreference,
+  setTitleModel,
   setTtsVoice,
   setUserName,
   useSettings,
   type ThemePreference,
 } from '../../services/settings.js'
+import { useProviders } from '../../services/providers.js'
 import { useTranslate, type TranslationKey, type TranslationMessage } from '../../i18n/index.js'
 import { Button } from '../base/Button.js'
 import { Modal } from '../base/Modal.js'
@@ -105,6 +107,7 @@ const SettingsContent = () => {
           {section === 'general' ? (
             <>
               <UserNameSetting />
+              <TitleModelSetting />
               <ThemeSetting />
               <LocaleSetting />
               <TtsVoiceSetting />
@@ -397,6 +400,32 @@ const UserNameSetting = () => {
       />
       <div className={styles.nameHint}>{t('settingsUserNameHint')}</div>
     </div>
+  )
+}
+
+/** 标题总结模型：留空时跟随本轮回复所用的模型 */
+const TitleModelSetting = () => {
+  const t = useTranslate()
+  const titleModel = useSettings((state) => state.titleModel)
+  const providers = useProviders((state) => state.providers)
+  const activeId = useProviders((state) => state.activeId)
+  const provider = providers.find((item) => item.id === activeId) ?? providers[0]
+  return (
+    <SettingCell
+      label={t('settingsTitleModel')}
+      status={null}
+      action={
+        <Select
+          ariaLabel={t('settingsTitleModel')}
+          value={titleModel ?? ''}
+          options={[
+            { value: '', label: t('settingsTitleModelFollow') },
+            ...provider.models.map((model) => ({ value: model.id, label: model.name })),
+          ]}
+          onChange={(value) => setTitleModel(value || null)}
+        />
+      }
+    />
   )
 }
 

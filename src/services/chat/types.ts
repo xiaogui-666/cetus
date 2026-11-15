@@ -114,6 +114,10 @@ export type Session = {
   messages: Message[]
   /** undefined 表示线性消息列表；null 表示空会话。 */
   rootMessageId?: string | null
+  /** 本会话使用的模型；null / undefined 时取全局默认模型 */
+  model?: string | null
+  /** 本会话生成标题用的模型；null / undefined 时跟随回复请求 */
+  titleModel?: string | null
 }
 
 /** 会话列表元数据；消息只在打开会话时加载。 */
