@@ -105,24 +105,49 @@ export const verifyApiKey = async (apiKey: string, signal?: AbortSignal): Promis
 }
 
 /**
- * 拉取指定供应商的模型列表。
- * 各家的 /models 都是 OpenAI 风格 `{ data: [{ id }] }`，只取 id。
+ * 拉取供应商的模型列表。
+ *
+ * 各家的 `/models` 位置不一样：DeepSeek 在 `{root}/models`，OpenAI 风格在
+ * `{base}/v1/models`。这里按候选顺序依次尝试，第一个有结果的用；
+ * 401/403 直接抛出，不把鉴权失败当地址问题反复试。
  */
 export const fetchModels = async (
   baseUrl: string,
   apiKey: string,
   signal?: AbortSignal
 ): Promise<string[]> => {
-  const origin = normalizeBaseUrl(baseUrl) || 'https://api.deepseek.com'
-  const response = await request(`${origin}/models`, {
-    method: 'GET',
-    headers: { Authorization: `Bearer ${apiKey}` },
-    signal,
-  })
-  const body = (await response.json()) as { data?: Array<{ id?: unknown }> }
-  return (body.data ?? []).flatMap((item) =>
-    typeof item.id === 'string' && item.id ? [item.id] : []
+  const trimmed = baseUrl.trim().replace(/\/+$/, '')
+  const root = normalizeBaseUrl(baseUrl) || 'https://api.deepseek.com'
+  const candidates = [`${trimmed}/models`, `${root}/v1/models`, `${root}/models`].filter(
+    (url, index, list) => list.indexOf(url) === index
   )
+
+  let lastError: unknown
+  for (const url of candidates) {
+    try {
+      const response = await request(url, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${apiKey}` },
+        signal,
+      })
+      const body = (await response.json()) as { data?: Array<{ id?: unknown }> }
+      const ids = (body.data ?? []).flatMap((item) =>
+        typeof item.id === 'string' && item.id ? [item.id] : []
+      )
+      if (ids.length > 0) {
+        return ids
+      }
+    } catch (error) {
+      lastError = error
+      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+        throw error
+      }
+    }
+  }
+  if (lastError) {
+    throw lastError
+  }
+  return []
 }
 
 /**

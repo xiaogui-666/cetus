@@ -114,8 +114,17 @@ const ProviderEditor = ({
         setModels((prev) => mergeModels(prev, ids))
         setMessage(t('providerPulled', { count: ids.length }))
       }
-    } catch {
-      setMessage(t('providerPullFailed'))
+    } catch (error) {
+      // 把底层原因带出来：Failed to fetch 基本就是被跨域拦住，HTTP xxx 是地址或鉴权问题
+      const detail =
+        error instanceof ApiError
+          ? error.status
+            ? `HTTP ${error.status}`
+            : error.message
+          : error instanceof Error
+            ? error.message
+            : String(error)
+      setMessage(`${t('providerPullFailed')}（${detail}）`)
     } finally {
       setPulling(false)
     }
@@ -195,6 +204,8 @@ const ProviderEditor = ({
           onChange={(event) => setBaseUrl(event.target.value)}
         />
       </div>
+
+      <p className={styles.hint}>{t('providerProtocolHint')}</p>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="provider-key">

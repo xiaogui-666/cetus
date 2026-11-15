@@ -13,6 +13,7 @@ declare const styles: {
   readonly "label": string;
   readonly "input": string;
   readonly "modelsHead": string;
+  readonly "hint": string;
   readonly "pullBtn": string;
   readonly "message": string;
   readonly "empty": string;

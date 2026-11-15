@@ -18,6 +18,8 @@ export const zh = {
   providerName: '名称',
   providerNamePlaceholder: '比如：DeepSeek 官方',
   providerBaseUrl: '接口地址',
+  providerProtocolHint:
+    '本客户端走 Anthropic 兼容接口（/anthropic/v1/messages）。供应商需要支持这个端点，只提供 OpenAI 接口的中转无法直接用。浏览器直连还要求对方允许跨域（CORS），否则会一直报网络异常。',
   providerApiKey: 'API Key',
   providerModels: '模型',
   providerPullModels: '拉取模型',
@@ -109,7 +111,7 @@ export const zh = {
   toolFindIntro: '查找关键词',
   toolFindFailTooltip: '未查找到相关内容',
   readingLink: '正在阅读',
-  commonNetworkErrorToast: '网络异常，请检查你的网络状况',
+  commonNetworkErrorToast: '网络异常：接口无法访问（地址不对，或该服务不允许跨域访问）',
   replyInvalidApiKey: 'API Key 无效或已被删除，请更换后重试',
   replyInsufficientBalance: '账户余额不足，请充值后重试',
   replyRateLimited: '请求过于频繁，请稍后再试',

@@ -21,6 +21,8 @@ export const en = {
   providerName: 'Name',
   providerNamePlaceholder: 'e.g. DeepSeek',
   providerBaseUrl: 'Base URL',
+  providerProtocolHint:
+    'This client talks to the Anthropic-compatible endpoint (/anthropic/v1/messages). Your provider must support it — an OpenAI-only relay will not work. Because requests go straight from the browser, the endpoint must also allow cross-origin (CORS) requests, otherwise it will always fail with a network error.',
   providerApiKey: 'API key',
   providerModels: 'Models',
   providerPullModels: 'Fetch models',
@@ -113,7 +115,8 @@ export const en = {
   toolFindIntro: 'Find keyword',
   toolFindFailTooltip: 'No related content found',
   readingLink: 'Reading',
-  commonNetworkErrorToast: 'Network Error. Please check your network status.',
+  commonNetworkErrorToast:
+    'Network error: the endpoint is unreachable, or it does not allow cross-origin requests.',
   replyInvalidApiKey:
     'The API Key is invalid or has been deleted. Please replace it and try again.',
   replyInsufficientBalance: 'Insufficient account balance. Please top up and try again.',
