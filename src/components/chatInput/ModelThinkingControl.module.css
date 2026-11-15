@@ -1,0 +1,411 @@
+.root {
+  position: relative;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 210px;
+  height: 34px;
+  padding: 0 10px 0 11px;
+  border-radius: 17px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  background-color: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+
+  &:hover {
+    background-color: var(--dsw-alias-interactive-bg-hover);
+  }
+}
+
+.pillActive {
+  color: var(--dsw-alias-brand-text);
+}
+
+.pillOpen {
+  border-color: var(--dsw-alias-brand-primary);
+  color: var(--dsw-alias-label-primary);
+}
+
+.pillModel {
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pillDot {
+  opacity: 0.4;
+}
+
+.pillLevel {
+  flex-shrink: 0;
+}
+
+.chevron {
+  flex-shrink: 0;
+  width: 10px;
+  height: 6px;
+  opacity: 0.6;
+  transition: transform 0.2s ease;
+}
+
+.pillOpen .chevron {
+  transform: rotate(180deg);
+}
+
+.popover {
+  /* 挂在 body 上，坐标由 useAnchoredPosition 以视口坐标写入 */
+  position: fixed;
+  z-index: 60;
+  box-sizing: border-box;
+  width: 300px;
+  max-width: calc(100vw - 32px);
+  padding: 14px 16px 15px;
+  border-radius: 22px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  background: var(--dsw-alias-bg-layer-2);
+  box-shadow:
+    0 8px 28px rgba(9, 14, 24, 0.14),
+    0 2px 8px rgba(9, 14, 24, 0.06);
+  animation: popIn 0.18s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+[data-ds-dark-theme] .popover {
+  background: var(--dsw-alias-bg-layer-3);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 13px;
+}
+
+.bolt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border-radius: 50%;
+  color: var(--dsw-alias-label-tertiary);
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.boltOn {
+  background: var(--dsw-alias-button-ghost-active-fill);
+  color: var(--dsw-alias-brand-text);
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  text-align: center;
+}
+
+.levelTitle {
+  margin-bottom: 2px;
+  font-size: 16.5px;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--dsw-alias-brand-text);
+}
+
+.modelSwitch {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  max-width: 180px;
+  padding: 2px 4px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+
+  &:active {
+    background: var(--dsw-alias-interactive-bg-hover);
+  }
+}
+
+.modelSwitchName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modelSwitch svg {
+  flex-shrink: 0;
+  width: 8px;
+  height: 10px;
+  opacity: 0.7;
+}
+
+.resetBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--dsw-alias-interactive-bg-hover);
+  }
+}
+
+.resetBtn svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* 30px 高的粗轨道，thumb 几乎填满，视觉上是一个完整的胶囊 */
+.track {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 30px;
+  padding: 2px;
+  border-radius: 999px;
+  background-color: var(--dsw-alias-markdown-inline-code);
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(57, 100, 254, 0.18);
+  }
+}
+
+.fill {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  max-width: calc(100% - 4px);
+  border-radius: 999px;
+  background: var(--dsw-alias-brand-primary);
+  transition: width 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.fillDragging {
+  transition: none;
+}
+
+.dots {
+  position: absolute;
+  inset: 0 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--dsw-alias-label-caption);
+  transition: background-color 0.2s ease;
+}
+
+.dotOn {
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.thumb {
+  position: absolute;
+  top: 2px;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(9, 14, 24, 0.22);
+  pointer-events: none;
+  transition:
+    left 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.16s ease;
+}
+
+.thumbDragging {
+  transition: box-shadow 0.16s ease;
+  box-shadow: 0 2px 8px rgba(9, 14, 24, 0.3);
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 0 2px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--dsw-alias-label-tertiary);
+  user-select: none;
+}
+
+.menuHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--dsw-alias-interactive-bg-hover);
+  }
+}
+
+.backBtn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.menuTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary);
+}
+
+.menuHeadSpacer {
+  width: 28px;
+}
+
+.groupLabel {
+  padding: 2px 4px 6px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 296px;
+  margin: 0 -6px;
+  padding: 0 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--dsw-alias-interactive-bg-hover);
+  }
+}
+
+.optionActive {
+  font-weight: 600;
+}
+
+.optionName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.check {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--dsw-alias-brand-primary);
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popover {
+    animation: none;
+  }
+
+  .fill,
+  .thumb {
+    transition: none;
+  }
+}
+
+@media (max-width: 439px) {
+  .pill {
+    max-width: 176px;
+  }
+
+  .pillModel {
+    max-width: 74px;
+  }
+
+  .popover {
+    width: calc(100vw - 32px);
+    max-width: 320px;
+  }
+}

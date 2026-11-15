@@ -8,8 +8,7 @@ import {
 } from '../base/icons.js'
 import { setSearch, useSettings } from '../../services/settings.js'
 import { currentApiKey } from '../../services/providers.js'
-import { ThinkingControl } from './ThinkingControl.js'
-import { ModelPicker } from './ModelPicker.js'
+import { ModelThinkingControl } from './ModelThinkingControl.js'
 import { useIsMobile } from '../../app/viewport.js'
 import { sendMessage, stopReply, useChatStore } from '../../services/chat/store.js'
 import {
@@ -203,8 +202,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
       <div className={styles.functionRow}>
         {/* 深度思考 / 智能搜索开关，tooltip 在按钮上方 */}
         <div ref={togglesRef} className={styles.toggles}>
-          <ModelPicker />
-          <ThinkingControl />
+          <ModelThinkingControl />
           <Tooltip content={t('deactivatedSearchTooltip')}>
             <button
               type="button"
