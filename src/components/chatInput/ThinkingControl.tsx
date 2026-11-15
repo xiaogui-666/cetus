@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useState, type CSSProperties } from 'react'
+import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslate } from '../../i18n/index.js'
 import {
@@ -23,14 +23,18 @@ const STOPS = THINKING_LEVELS.length
 
 /**
  * 深度思考强度：输入框下方一个 pill，点开是浮层面板。
- * 滑块第 0 档即关闭思考，往右逐级提高强度 —— 一个控件同时管开关和强度。
- * 面板挂在 body 上（输入框容器有 overflow: hidden，浮层放里面会被裁掉）。
+ *
+ * 滑轨用 div + Pointer Events 自己实现（不用原生 range）：原生 range 在移动端
+ * 触摸区太小拖不动，各平台 thumb 样式也难统一。这里拖动全程按比例取整，天然吸附到档位。
+ * 面板挂在 body 上，因为输入框容器有 overflow: hidden，浮层放里面会被裁掉。
  */
 export const ThinkingControl = () => {
   const t = useTranslate()
   const thinking = useSettings((state) => state.thinking)
   const level = useSettings((state) => state.thinkingLevel)
   const [open, setOpen] = useState(false)
+  const [dragging, setDragging] = useState(false)
+  const trackRef = useRef<HTMLDivElement>(null)
 
   const { anchorRef, floatingRef, position } = useAnchoredPosition<HTMLDivElement, HTMLDivElement>(
     open,
@@ -40,18 +44,68 @@ export const ThinkingControl = () => {
 
   const index = THINKING_LEVELS.indexOf(level)
   const stop = thinking ? index + 1 : 0
+  const percent = (stop / STOPS) * 100
   const label = thinking ? t(LEVEL_LABEL[level]) : t('thinkingOff')
 
   const select = (next: number) => {
-    if (next <= 0) {
+    const clamped = Math.max(0, Math.min(STOPS, Math.round(next)))
+    if (clamped === 0) {
       setThinking(false)
       return
     }
-    const target = THINKING_LEVELS[Math.min(next, STOPS) - 1]
+    const target = THINKING_LEVELS[clamped - 1]
     if (target) {
       setThinking(true)
       setThinkingLevel(target)
     }
+  }
+
+  /** 按触点位置换算档位：四舍五入 = 吸附 */
+  const pick = (clientX: number) => {
+    const track = trackRef.current
+    if (!track) {
+      return
+    }
+    const rect = track.getBoundingClientRect()
+    if (rect.width === 0) {
+      return
+    }
+    const ratio = (clientX - rect.left) / rect.width
+    select(ratio * STOPS)
+  }
+
+  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId)
+    setDragging(true)
+    pick(event.clientX)
+  }
+
+  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.hasPointerCapture(event.pointerId)) {
+      return
+    }
+    pick(event.clientX)
+  }
+
+  const endDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+    setDragging(false)
+  }
+
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const step =
+      event.key === 'ArrowRight' || event.key === 'ArrowUp'
+        ? 1
+        : event.key === 'ArrowLeft' || event.key === 'ArrowDown'
+          ? -1
+          : 0
+    if (step === 0) {
+      return
+    }
+    event.preventDefault()
+    select(stop + step)
   }
 
   return (
@@ -95,28 +149,47 @@ export const ThinkingControl = () => {
                 <span className={styles.levelBig}>{label}</span>
               </div>
 
-              <div className={styles.sliderWrap}>
-                <input
-                  className={styles.slider}
-                  type="range"
-                  min={0}
-                  max={STOPS}
-                  step={1}
-                  value={stop}
-                  aria-label={t('thinkingStrengthTitle')}
-                  aria-valuetext={label}
-                  style={{ '--fill': `${(stop / STOPS) * 100}%` } as CSSProperties}
-                  onChange={(event) => select(Number(event.target.value))}
-                />
-                <div className={styles.ticks} aria-hidden="true">
-                  {Array.from({ length: STOPS + 1 }, (_, v) => (
-                    <span key={v} className={clsx(styles.tick, stop >= v && styles.tickOn)} />
-                  ))}
+              <div
+                ref={trackRef}
+                className={styles.track}
+                role="slider"
+                tabIndex={0}
+                aria-label={t('thinkingStrengthTitle')}
+                aria-valuemin={0}
+                aria-valuemax={STOPS}
+                aria-valuenow={stop}
+                aria-valuetext={label}
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={endDrag}
+                onPointerCancel={endDrag}
+                onKeyDown={onKeyDown}
+              >
+                <div className={styles.rail}>
+                  <div
+                    className={clsx(styles.fill, dragging && styles.fillDragging)}
+                    style={{ width: `${percent}%` }}
+                  />
+                  <div className={styles.marks} aria-hidden="true">
+                    {Array.from({ length: STOPS + 1 }, (_, i) => (
+                      <span
+                        key={i}
+                        className={clsx(styles.mark, stop >= i && styles.markOn)}
+                        style={{ left: `${(i / STOPS) * 100}%` }}
+                      />
+                    ))}
+                  </div>
+                  <div
+                    className={clsx(styles.knob, dragging && styles.knobDragging)}
+                    style={{ left: `${percent}%` }}
+                  />
                 </div>
               </div>
 
               <div className={styles.scale} aria-hidden="true">
                 <span>{t('thinkingOff')}</span>
+                <span>{t(LEVEL_LABEL.low)}</span>
+                <span>{t(LEVEL_LABEL.medium)}</span>
                 <span>{t(LEVEL_LABEL.high)}</span>
               </div>
             </div>,
