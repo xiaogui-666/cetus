@@ -9,6 +9,7 @@ import {
   useProviders,
   type ModelConfig,
   type Provider,
+  type ProviderProtocol,
 } from '../../services/providers.js'
 import { Button } from '../base/Button.js'
 import { IconCheckOutline16, IconEditOutline16, IconTrashOutline16 } from '../base/icons.js'
