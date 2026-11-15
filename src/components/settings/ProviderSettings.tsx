@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslate } from '../../i18n/index.js'
-import { fetchModels } from '../../services/api/client.js'
+import { ApiError, fetchModels } from '../../services/api/client.js'
 import {
   setActiveProvider,
   setProviders,
