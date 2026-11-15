@@ -8,6 +8,7 @@
   padding: 6px 12px 0;
   border-right: 1px solid var(--dsw-alias-border-l1);
   background-color: var(--dsw-specific-sidebar-fill);
+  animation: siderIn 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
 .top {
@@ -18,7 +19,7 @@
   box-sizing: border-box;
   height: 48px;
   margin-bottom: 16px;
-  padding: 15px 0 10px 4px;
+  padding: 10px 0 8px 4px;
   flex-shrink: 0;
 }
 
@@ -26,9 +27,12 @@
   min-width: 0;
   padding-left: 4px;
   overflow: hidden;
-  font-size: 20px;
-  line-height: 22px;
+  /* 品牌名用手写体（Caveat）；中文等非拉丁字符自动回落到系统字体 */
+  font-family: 'Cetus Script', 'Segoe Script', 'Bradley Hand', cursive;
+  font-size: 26px;
+  line-height: 24px;
   font-weight: 600;
+  letter-spacing: 0.4px;
   white-space: nowrap;
   text-overflow: ellipsis;
   color: var(--dsw-alias-brand-primary);
@@ -126,10 +130,12 @@
 .settings {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   box-sizing: border-box;
   width: 100%;
   margin-block: auto;
-  padding: 6px 2px 6px 6px;
+  padding: 6px 6px 6px 6px;
   border: none;
   border-radius: 12px;
   background: none;
@@ -158,9 +164,25 @@
   color: var(--dsw-alias-label-primary);
 }
 
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--dsw-alias-brand-primary);
+  color: var(--dsw-alias-label-primary-inverted);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .settingsLabel {
+  flex: 1 1 auto;
   min-width: 0;
-  margin-left: 4px;
   overflow: hidden;
   font-size: 14px;
   white-space: nowrap;
@@ -198,12 +220,47 @@
   bottom: 0;
   left: 0;
   z-index: 800;
+  animation: drawerSlide 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
+/* 遮罩同时负责「景深」：背后内容模糊压暗，抽屉轻微位移+模糊浮现 */
 .drawerMask {
   position: absolute;
   inset: 0;
   z-index: 799;
+  background: rgba(9, 14, 24, 0.22);
+  backdrop-filter: blur(10px) saturate(115%);
+  -webkit-backdrop-filter: blur(10px) saturate(115%);
+  animation: maskFade 0.24s ease both;
+}
+
+@keyframes siderIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+@keyframes drawerSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-18px) scale(0.985);
+    filter: blur(8px);
+  }
+}
+
+@keyframes maskFade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sider,
+  .drawer,
+  .drawerMask {
+    animation: none;
+  }
 }
 
 .mobile {

@@ -16,6 +16,7 @@ import { MobileHeader } from '../components/session/MobileHeader.js'
 import { Welcome } from '../components/session/Welcome.js'
 import { ensureApiKey } from '../components/settings/settingsDialogState.js'
 import { SettingsDialog } from '../components/settings/SettingsDialog.js'
+import { NicknameGate } from '../components/onboarding/NicknameGate.js'
 import { Toast } from '../components/base/Toast.js'
 import { showToast } from '../components/base/toastState.js'
 import { onUploadNotice } from '../services/attachments.js'
@@ -132,6 +133,7 @@ export const App = () => {
         </main>
         <SearchPanel />
       </div>
+      <NicknameGate />
       <SettingsDialog />
       <Toast />
     </>
