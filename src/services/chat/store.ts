@@ -1,11 +1,12 @@
 import { create } from 'zustand'
 import { createId } from '../../utils/id.js'
 import { ApiError, streamMessage } from '../api/client.js'
+import { streamOpenAIMessage } from '../api/openai.js'
 import type { CreateMessageRequest } from '../api/types.js'
 import { extractFileIds, getFileErrorCode, isRetryableApiError } from '../api/errors.js'
 import { cancelUpload, describeUploadError, uploadAttachment, useUploads } from '../attachments.js'
 import { useSettings } from '../settings.js'
-import { currentApiKey, defaultModelId } from '../providers.js'
+import { currentApiKey, defaultModelId, getActiveProvider } from '../providers.js'
 import { appendBranch, getVisibleMessages, normalizeSession, selectVersion } from './branches.js'
 import * as db from './db.js'
 import {
@@ -1065,21 +1066,22 @@ const streamReply = async (sessionId: string, initial: AssistantMessage, request
           initial.thinking ?? false,
           latestReminder
         )
-        const events = streamMessage(
-          currentApiKey(),
-          {
-            model: initial.model ?? defaultModelId(),
-            system: systemPrompt(),
-            messages,
-            thinking: initial.thinking
-              ? { type: 'enabled', level: useSettings.getState().thinkingLevel }
-              : { type: 'disabled' },
-            safety_check: SAFETY_CHECK,
-            tools: serverTools(initial.search ?? false),
-            ...(titleRequests.has(controller) ? { title: { enabled: true } } : {}),
-          },
-          controller.signal
-        )
+        const requestBody: CreateMessageRequest = {
+          model: initial.model ?? defaultModelId(),
+          system: systemPrompt(),
+          messages,
+          thinking: initial.thinking
+            ? { type: 'enabled', level: useSettings.getState().thinkingLevel }
+            : { type: 'disabled' },
+          safety_check: SAFETY_CHECK,
+          tools: serverTools(initial.search ?? false),
+          ...(titleRequests.has(controller) ? { title: { enabled: true } } : {}),
+        }
+        // 按供应商协议选实现，两者产出的都是同一套内部事件流
+        const events =
+          getActiveProvider().protocol === 'openai'
+            ? streamOpenAIMessage(currentApiKey(), requestBody, controller.signal)
+            : streamMessage(currentApiKey(), requestBody, controller.signal)
         const blockIndexes = new Map<number, number>()
         for await (const event of events) {
           receivedContent ||= event.type === 'content_block_start'

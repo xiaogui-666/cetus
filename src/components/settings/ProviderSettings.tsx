@@ -13,6 +13,7 @@ import {
 import { Button } from '../base/Button.js'
 import { IconCheckOutline16, IconEditOutline16, IconTrashOutline16 } from '../base/icons.js'
 import { Modal } from '../base/Modal.js'
+import { Select } from '../base/Select.js'
 import styles from './ProviderSettings.module.css'
 
 /** 拉回的模型 id 与本地配置合并：已有的保留自定义字段，缺的补默认值 */
@@ -96,6 +97,7 @@ const ProviderEditor = ({
   const [name, setName] = useState(provider?.name ?? '')
   const [baseUrl, setBaseUrl] = useState(provider?.baseUrl ?? '')
   const [apiKey, setApiKey] = useState(provider?.apiKey ?? '')
+  const [protocol, setProtocol] = useState<ProviderProtocol>(provider?.protocol ?? 'anthropic')
   const [models, setModels] = useState<ModelConfig[]>(provider?.models ?? [])
   const [pulling, setPulling] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -149,6 +151,7 @@ const ProviderEditor = ({
         baseUrl: baseUrl.trim(),
         apiKey: apiKey.trim(),
         models,
+        protocol,
       })
     } else {
       const next: Provider = {
@@ -157,6 +160,7 @@ const ProviderEditor = ({
         baseUrl: baseUrl.trim(),
         apiKey: apiKey.trim(),
         models,
+        protocol,
       }
       setProviders([...useProviders.getState().providers, next], next.id)
     }
@@ -202,6 +206,19 @@ const ProviderEditor = ({
           spellCheck={false}
           placeholder="https://api.deepseek.com"
           onChange={(event) => setBaseUrl(event.target.value)}
+        />
+      </div>
+
+      <div className={styles.field}>
+        <span className={styles.label}>{t('providerProtocol')}</span>
+        <Select
+          ariaLabel={t('providerProtocol')}
+          value={protocol}
+          options={[
+            { value: 'anthropic', label: t('providerProtocolAnthropic') },
+            { value: 'openai', label: t('providerProtocolOpenai') },
+          ]}
+          onChange={(value) => setProtocol(value === 'openai' ? 'openai' : 'anthropic')}
         />
       </div>
 

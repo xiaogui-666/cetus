@@ -21,8 +21,11 @@ export const en = {
   providerName: 'Name',
   providerNamePlaceholder: 'e.g. DeepSeek',
   providerBaseUrl: 'Base URL',
+  providerProtocol: 'Protocol',
+  providerProtocolAnthropic: 'Anthropic Messages',
+  providerProtocolOpenai: 'OpenAI Chat Completions',
   providerProtocolHint:
-    'This client talks to the Anthropic-compatible endpoint (/anthropic/v1/messages). Your provider must support it — an OpenAI-only relay will not work. Because requests go straight from the browser, the endpoint must also allow cross-origin (CORS) requests, otherwise it will always fail with a network error.',
+    'Anthropic gives you web search and file input; OpenAI works with far more providers but currently supports plain chat only. Either way the endpoint must allow cross-origin (CORS) requests, otherwise it always fails with a network error.',
   providerApiKey: 'API key',
   providerModels: 'Models',
   providerPullModels: 'Fetch models',

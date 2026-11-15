@@ -16,6 +16,9 @@ export type ModelConfig = {
   thinking: boolean
 }
 
+/** 供应商的协议形态：Anthropic Messages 或 OpenAI Chat Completions */
+export type ProviderProtocol = 'anthropic' | 'openai'
+
 /** 一个 API 供应商：自己的地址、Key 和模型清单 */
 export type Provider = {
   id: string
@@ -23,6 +26,8 @@ export type Provider = {
   baseUrl: string
   apiKey: string
   models: ModelConfig[]
+  /** 未填时按 anthropic 处理，兼容老的本地数据 */
+  protocol: ProviderProtocol
 }
 
 const PROVIDERS_KEY = 'cetus:providers'
@@ -98,6 +103,7 @@ const normalizeProvider = (value: unknown): Provider | null => {
     baseUrl: typeof raw.baseUrl === 'string' ? raw.baseUrl : '',
     apiKey: typeof raw.apiKey === 'string' ? raw.apiKey : '',
     models: normalizeModels(raw.models),
+    protocol: raw.protocol === 'openai' ? 'openai' : 'anthropic',
   }
 }
 
@@ -107,6 +113,7 @@ export const createDeepseekProvider = (apiKey = ''): Provider => ({
   baseUrl: 'https://api.deepseek.com',
   apiKey,
   models: deepseekModels(),
+  protocol: 'anthropic',
 })
 
 /** 首次启动：把旧设置里的 Key 迁进默认供应商；数据损坏则重建 */
