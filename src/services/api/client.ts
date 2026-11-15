@@ -104,6 +104,27 @@ export const verifyApiKey = async (apiKey: string, signal?: AbortSignal): Promis
 }
 
 /**
+ * 拉取指定供应商的模型列表。
+ * 各家的 /models 都是 OpenAI 风格 `{ data: [{ id }] }`，只取 id。
+ */
+export const fetchModels = async (
+  baseUrl: string,
+  apiKey: string,
+  signal?: AbortSignal
+): Promise<string[]> => {
+  const origin = baseUrl.trim().replace(/\/+$/, '')
+  const response = await request(`${origin}/models`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${apiKey}` },
+    signal,
+  })
+  const body = (await response.json()) as { data?: Array<{ id?: unknown }> }
+  return (body.data ?? []).flatMap((item) =>
+    typeof item.id === 'string' && item.id ? [item.id] : []
+  )
+}
+
+/**
  * POST /anthropic/v1/files 上传附件（不设过期时间，会话里的历史附件一直可用）。
  * purpose 为 null 时不传该字段（图片）；purpose 必须排在 file 之前。
  */
