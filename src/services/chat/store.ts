@@ -174,11 +174,6 @@ const updateSession = (id: string, update: (session: Session) => Session) =>
     }
   })
 
-/** 切换会话使用的模型，只影响之后的请求 */
-export const setSessionModel = (sessionId: string, model: string) => {
-  updateSession(sessionId, (session) => (session.model === model ? session : { ...session, model }))
-}
-
 const updateReply = (sessionId: string, reply: AssistantMessage) =>
   updateSession(sessionId, (session) => ({
     ...session,
