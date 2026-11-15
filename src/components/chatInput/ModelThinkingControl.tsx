@@ -12,6 +12,7 @@ import {
 } from '../../services/settings.js'
 import { useProviders } from '../../services/providers.js'
 import { setSessionModel, useChatStore } from '../../services/chat/store.js'
+import { openSettings } from '../settings/settingsDialogState.js'
 import { useAnchoredPosition, useDismiss } from '../base/anchored.js'
 import { IconThinkOutline14 } from '../base/icons.js'
 import styles from './ModelThinkingControl.module.css'
@@ -24,11 +25,6 @@ const LEVEL_LABEL = {
 
 /** 滑块档位：0 = 关闭，1..n 对应 THINKING_LEVELS */
 const STOPS = THINKING_LEVELS.length
-
-/** 供应商没配模型时的兜底条目 */
-const FALLBACK_MODELS = [
-  { id: 'deepseek-flash', name: 'DeepSeek Flash', kind: 'text' as const, vision: true, thinking: true },
-]
 
 /**
  * 模型 + 思考强度的合并控件。

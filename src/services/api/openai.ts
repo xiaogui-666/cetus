@@ -72,7 +72,7 @@ export async function* streamOpenAIMessage(
   body: CreateMessageRequest,
   signal: AbortSignal
 ): AsyncGenerator<MessageStreamEvent> {
-  const response = await request(`${apiOrigin()}/chat/completions`, {
+  const response = await request(openaiChatUrl(), {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,

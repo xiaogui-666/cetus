@@ -193,11 +193,17 @@ export const currentApiKey = (): string => getActiveProvider().apiKey
 
 export const setActiveProvider = (activeId: string) => {
   const { providers } = useProviders.getState()
-  if (!providers.some((provider) => provider.id === activeId)) {
+  const target = providers.find((provider) => provider.id === activeId)
+  if (!target) {
     return
   }
   persist(providers, activeId)
   useProviders.setState({ activeId })
+  // 模型属于供应商：切换后旧模型可能不存在，重置成新供应商的默认
+  const current = useSettings.getState().model
+  if (current && !target.models.some((model) => model.id === current)) {
+    setModel(null)
+  }
 }
 
 /** 批量写入供应商列表，顺带保证 activeId 指向存在的条目 */
