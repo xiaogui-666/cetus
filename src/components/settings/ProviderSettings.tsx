@@ -154,6 +154,9 @@ const ProviderEditor = ({
         models,
         protocol,
       })
+      // 编辑完就切到它：用户打开这个弹窗基本就是想用它，
+      // 不切的话请求会继续打到上一个选中的供应商
+      setActiveProvider(provider.id)
     } else {
       const next: Provider = {
         id: `p-${Date.now().toString(36)}`,

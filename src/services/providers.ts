@@ -183,11 +183,13 @@ export const normalizeBaseUrl = (value: string): string => {
 }
 
 /**
- * 当前可用的 API Key：供应商里的优先，空时回落到旧设置字段。
- * 旧字段在保存 Key 时会同步写一次，迁移期两边保持一致。
+ * 当前供应商的 Key。
+ *
+ * 注意：这里**不做跨供应商回退**。之前 `provider.apiKey || 旧全局字段` 的写法会在
+ * 新供应商没填 Key 时悄悄拿 DeepSeek 的 Key 去请求，和"串到 DeepSeek"的现象直接相关。
+ * 老版本的 Key 已经由 initialProviders() 迁进默认供应商，运行期不需要再兜。
  */
-export const currentApiKey = (): string =>
-  getActiveProvider().apiKey || useSettings.getState().apiKey || ''
+export const currentApiKey = (): string => getActiveProvider().apiKey
 
 export const setActiveProvider = (activeId: string) => {
   const { providers } = useProviders.getState()
@@ -223,15 +225,11 @@ export const updateProvider = (id: string, patch: Partial<Omit<Provider, 'id'>>)
   useProviders.setState({ providers: next })
 }
 
-/** 当前供应商的模型；没有模型时给一个占位，避免界面出现空列表 */
-export const getActiveModels = (): ModelConfig[] => {
-  const provider = getActiveProvider()
-  return provider.models.length > 0
-    ? provider.models
-    : [{ id: 'deepseek-flash', name: 'DeepSeek Flash', kind: 'text', vision: true, thinking: true }]
-}
+/** 当前供应商的模型；不再塞 DeepSeek 兜底，没配就是空数组 */
+export const getActiveModels = (): ModelConfig[] => getActiveProvider().models
 
 export const findModel = (id: string | null): ModelConfig | undefined =>
   id ? getActiveModels().find((model) => model.id === id) : undefined
 
-export const defaultModelId = (): string => getActiveModels()[0].id
+/** 当前供应商的第一个模型；没配模型时返回空串，由调用方决定怎么提示 */
+export const defaultModelId = (): string => getActiveModels()[0]?.id ?? ''

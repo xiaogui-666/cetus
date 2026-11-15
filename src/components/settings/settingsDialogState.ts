@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { currentApiKey } from '../../services/providers.js'
+import { currentApiKey, getActiveModels } from '../../services/providers.js'
 
 /** 设置弹窗的分组：通用设置 / 供应商 / 数据管理 */
 export type SettingsSection = 'general' | 'provider' | 'data'
@@ -21,5 +21,14 @@ export const ensureApiKey = () => {
     return true
   }
   openSettings('data')
+  return false
+}
+
+/** 当前供应商还没有模型时，打开供应商设置，返回是否已配好 */
+export const ensureModel = () => {
+  if (getActiveModels().length > 0) {
+    return true
+  }
+  openSettings('provider')
   return false
 }

@@ -6,7 +6,7 @@ import type { CreateMessageRequest } from '../api/types.js'
 import { extractFileIds, getFileErrorCode, isRetryableApiError } from '../api/errors.js'
 import { cancelUpload, describeUploadError, uploadAttachment, useUploads } from '../attachments.js'
 import { useSettings } from '../settings.js'
-import { currentApiKey, defaultModelId, getActiveProvider } from '../providers.js'
+import { currentApiKey, getActiveProvider } from '../providers.js'
 import { appendBranch, getVisibleMessages, normalizeSession, selectVersion } from './branches.js'
 import * as db from './db.js'
 import {
@@ -34,13 +34,38 @@ import {
   type UserMessage,
 } from './types.js'
 
-/** 所有生成请求统一携带的助手身份说明 */
-const SYSTEM_PROMPT = '该助手为DeepSeek，由深度求索公司创造。'
-
-/** 用户设了称呼就请模型直接用称呼，没有就保持原样 */
+/**
+ * 请求里带的身份说明。
+ *
+ * 只在直连 DeepSeek 官方时声明它是 DeepSeek —— 早期这里对所有供应商都写死
+ * 「该助手为DeepSeek」，接到第三方中转上，模型会照着这句话自称 DeepSeek，
+ * 看起来就像"请求跑去了 DeepSeek"。其他供应商留空，让模型保持自己的身份。
+ */
 const systemPrompt = (): string => {
+  const parts: string[] = []
+  if (/deepseek\.com/i.test(getActiveProvider().baseUrl)) {
+    parts.push('该助手为DeepSeek，由深度求索公司创造。')
+  }
   const name = useSettings.getState().userName.trim()
-  return name ? `${SYSTEM_PROMPT}对方希望被称呼为「${name}」。` : SYSTEM_PROMPT
+  if (name) {
+    parts.push(`对方希望被称呼为「${name}」。`)
+  }
+  return parts.join('')
+}
+
+/**
+ * 校验模型属于当前供应商。
+ *
+ * 会话里存的是模型 id，切换供应商后旧 id 可能不存在（例如 DeepSeek 的
+ * deepseek-flash 被带到一个只提供自家模型的中转上）。这里统一回落成
+ * 当前供应商的第一个模型，避免请求带着别的厂商的模型名出去。
+ */
+const resolveModel = (requested: string | null | undefined): string => {
+  const provider = getActiveProvider()
+  if (requested && provider.models.some((model) => model.id === requested)) {
+    return requested
+  }
+  return provider.models[0]?.id ?? ''
 }
 /** 保留最近打开的详情；当前会话、生成中及尚未成功保存的会话不淘汰。 */
 const SESSION_CACHE_LIMIT = 5
@@ -280,7 +305,7 @@ const createReply = (sessionId?: string): AssistantMessage => {
     id: createId(),
     role: 'assistant',
     createdAt: Date.now(),
-    model: sessionModel ?? defaultModelId(),
+    model: resolveModel(sessionModel),
     thinking,
     search,
     prefix: true,
@@ -732,7 +757,7 @@ export const continueReply = (sessionId: string, messageId: string) => {
   const reply: AssistantMessage = {
     ...previous,
     // 未记录请求配置的回复，续写时使用默认模型和当前开关。
-    model: previous.model ?? defaultModelId(),
+    model: resolveModel(previous.model),
     thinking: previous.thinking ?? thinking,
     search: previous.search ?? search,
     status: 'pending',
@@ -1024,7 +1049,7 @@ const requestSessionTitle = async (sessionId: string, model: string, request: Re
 const streamReply = async (sessionId: string, initial: AssistantMessage, request: Request) => {
   const controller = new AbortController()
   const session = getSession(sessionId)
-  const replyModel = initial.model ?? defaultModelId()
+  const replyModel = resolveModel(initial.model)
   const titleModel = session?.titleModel
   if (!session?.title) {
     if (titleModel && titleModel !== replyModel) {
@@ -1067,7 +1092,7 @@ const streamReply = async (sessionId: string, initial: AssistantMessage, request
           latestReminder
         )
         const requestBody: CreateMessageRequest = {
-          model: initial.model ?? defaultModelId(),
+          model: resolveModel(initial.model),
           system: systemPrompt(),
           messages,
           thinking: initial.thinking
