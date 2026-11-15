@@ -46,6 +46,7 @@ const KEYS = {
   siderCollapsed: 'chat-demo:sider-collapsed',
   model: 'chat-demo:model',
   titleModel: 'chat-demo:title-model',
+  speechProviderId: 'chat-demo:speech-provider',
 } as const
 
 const read = (key: string) => {
@@ -186,4 +187,9 @@ export const setModel = (model: string | null) => {
 export const setTitleModel = (titleModel: string | null) => {
   write(KEYS.titleModel, titleModel)
   useSettings.setState({ titleModel })
+}
+
+export const setSpeechProviderId = (speechProviderId: string | null) => {
+  write(KEYS.speechProviderId, speechProviderId)
+  useSettings.setState({ speechProviderId })
 }
