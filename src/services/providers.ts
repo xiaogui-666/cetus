@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { useSettings } from './settings.js'
+import { setModel, useSettings } from './settings.js'
 
 /** 模型类别：文本 / 图像 */
 export type ModelKind = 'text' | 'image'
