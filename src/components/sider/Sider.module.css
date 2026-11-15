@@ -255,6 +255,31 @@
   }
 }
 
+/* 收起：反向播放，抽屉向左淡出并轻微缩小，遮罩同步消隐 */
+.closingDrawer {
+  pointer-events: none;
+  animation: drawerSlideOut 0.24s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.closingMask {
+  pointer-events: none;
+  animation: maskFadeOut 0.24s ease both;
+}
+
+@keyframes drawerSlideOut {
+  to {
+    opacity: 0;
+    transform: translateX(-18px) scale(0.985);
+    filter: blur(8px);
+  }
+}
+
+@keyframes maskFadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sider,
   .drawer,

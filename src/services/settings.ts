@@ -7,6 +7,12 @@ export type Locale = 'zh-CN' | 'en-US'
 /** 主题偏好；默认跟随系统 */
 export type ThemePreference = 'light' | 'dark' | 'system'
 
+/** 深度思考强度，对应 API 的 thinking.level */
+export type ThinkingLevel = 'low' | 'medium' | 'high'
+
+/** 档位顺序，UI 按这个数组渲染刻度 */
+export const THINKING_LEVELS: ThinkingLevel[] = ['low', 'medium', 'high']
+
 /** 本机设置，存 localStorage：API Key、语言、主题、位置、朗读音色、深度思考与智能搜索开关、侧边栏收起状态、用户称呼 */
 type Settings = {
   apiKey: string | null
@@ -16,20 +22,22 @@ type Settings = {
   location: UserLocation | null
   ttsVoice: TtsVoice
   thinking: boolean
+  thinkingLevel: ThinkingLevel
   search: boolean
   siderCollapsed: boolean
 }
 
 const KEYS = {
   apiKey: 'chat-demo:api-key',
+  userName: 'chat-demo:user-name',
   locale: 'chat-demo:locale',
   location: 'chat-demo:location',
   themePreference: 'chat-demo:theme-preference',
   ttsVoice: 'chat-demo:tts-voice',
   thinking: 'chat-demo:thinking',
+  thinkingLevel: 'chat-demo:thinking-level',
   search: 'chat-demo:search',
   siderCollapsed: 'chat-demo:sider-collapsed',
-  userName: 'chat-demo:user-name',
 } as const
 
 const read = (key: string) => {
@@ -89,16 +97,23 @@ const initialThemePreference = (): ThemePreference => {
 /** 未保存过时使用服务端默认音色 stella（海星） */
 const initialTtsVoice = (): TtsVoice => (read(KEYS.ttsVoice) === 'tide' ? 'tide' : 'stella')
 
+/** 未保存过时用最高档，与 API 默认一致 */
+const initialThinkingLevel = (): ThinkingLevel => {
+  const saved = read(KEYS.thinkingLevel)
+  return saved === 'low' || saved === 'medium' ? saved : 'high'
+}
+
 export const useSettings = create<Settings>(() => ({
   apiKey: read(KEYS.apiKey),
+  userName: read(KEYS.userName) ?? '',
   locale: initialLocale(),
   location: initialLocation(),
   themePreference: initialThemePreference(),
   ttsVoice: initialTtsVoice(),
   thinking: read(KEYS.thinking) === 'true',
+  thinkingLevel: initialThinkingLevel(),
   search: read(KEYS.search) === 'true',
   siderCollapsed: read(KEYS.siderCollapsed) === 'true',
-  userName: read(KEYS.userName) ?? '',
 }))
 
 export const setLocale = (locale: Locale) => {
@@ -130,6 +145,11 @@ export const setApiKey = (apiKey: string | null) => {
 export const setThinking = (thinking: boolean) => {
   write(KEYS.thinking, String(thinking))
   useSettings.setState({ thinking })
+}
+
+export const setThinkingLevel = (thinkingLevel: ThinkingLevel) => {
+  write(KEYS.thinkingLevel, thinkingLevel)
+  useSettings.setState({ thinkingLevel })
 }
 
 export const setSearch = (search: boolean) => {

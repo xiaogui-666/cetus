@@ -1,0 +1,245 @@
+.root {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 10px 0 12px;
+  border-radius: 18px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  background-color: transparent;
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background-color: var(--dsw-alias-interactive-bg-hover);
+  }
+}
+
+.pill.active {
+  background-color: var(--dsw-alias-button-ghost-active-fill);
+  color: var(--dsw-alias-brand-text);
+  border-color: var(--dsw-alias-button-ghost-active-border);
+}
+
+.pillOpen {
+  border-color: var(--dsw-alias-brand-primary);
+}
+
+.pillLabel {
+  max-width: 56px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chevron {
+  flex-shrink: 0;
+  width: 10px;
+  height: 6px;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.pillOpen .chevron {
+  transform: rotate(180deg);
+}
+
+.panel {
+  /* 挂在 body 上，坐标由 useAnchoredPosition 以视口坐标写入 */
+  position: fixed;
+  z-index: 60;
+  box-sizing: border-box;
+  width: 248px;
+  padding: 16px 18px 13px;
+  border-radius: 22px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  background: var(--dsw-alias-bg-layer-3);
+  box-shadow:
+    0 12px 32px rgba(9, 14, 24, 0.14),
+    0 2px 6px rgba(9, 14, 24, 0.06);
+  transform-origin: bottom left;
+  animation: panelIn 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+[data-ds-dark-theme] .panel {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.bolt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-tertiary);
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.boltOn {
+  background: var(--dsw-alias-button-ghost-active-fill);
+  color: var(--dsw-alias-brand-text);
+}
+
+.levelBig {
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary);
+}
+
+.sliderWrap {
+  position: relative;
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 26px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+/* 轨道：已选蓝色，未选浅灰 */
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 100px;
+  background: linear-gradient(
+    to right,
+    var(--dsw-alias-brand-primary) var(--fill, 0%),
+    var(--dsw-alias-border-l3) var(--fill, 0%)
+  );
+}
+
+.slider::-moz-range-track {
+  height: 6px;
+  border-radius: 100px;
+  background: var(--dsw-alias-border-l3);
+}
+
+.slider::-moz-range-progress {
+  height: 6px;
+  border-radius: 100px;
+  background: var(--dsw-alias-brand-primary);
+}
+
+/* 滑块圆点：白底 + 蓝色描边，按下去略微放大 */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  margin-top: -7px;
+  border: 2px solid var(--dsw-alias-brand-primary);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(9, 14, 24, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.slider:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+.slider::-moz-range-thumb {
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--dsw-alias-brand-primary);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(57, 100, 254, 0.18);
+}
+
+/* 刻度点与滑块同高，纯视觉提示，点击交给 range 本身 */
+.ticks {
+  position: absolute;
+  inset: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.tick {
+  width: 5px;
+  height: 5px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--dsw-alias-label-dimmed);
+  transition: background-color 0.2s ease;
+}
+
+.tickOn {
+  background: #fff;
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--dsw-alias-label-tertiary);
+  user-select: none;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+}
+
+@media (max-width: 439px) {
+  .panel {
+    width: 230px;
+    padding: 14px 16px 12px;
+  }
+
+  .levelBig {
+    font-size: 18px;
+  }
+}

@@ -11,7 +11,7 @@ import { IconButton } from '../base/IconButton.js'
 import { Modal } from '../base/Modal.js'
 import { showToast } from '../base/toastState.js'
 import { openSettings } from '../settings/settingsDialogState.js'
-import { closeMobileSider, useMobileSider } from './mobileSiderState.js'
+import { closeMobileSider, settleMobileSider, useMobileSider } from './mobileSiderState.js'
 import { SessionItem } from './SessionItem.js'
 import styles from './Sider.module.css'
 
@@ -149,16 +149,28 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
   )
 }
 
-/** 移动端抽屉：浮在页面上方，点空白区域关闭。 */
+/** 移动端抽屉：浮在页面上方，点空白区域关闭。收起动作用 closing 标记过渡，动画结束才卸载。 */
 export const MobileSider = () => {
   const open = useMobileSider((state) => state.open)
-  if (!open) {
+  const closing = useMobileSider((state) => state.closing)
+  if (!open && !closing) {
     return null
   }
   return (
     <>
-      <div className={styles.drawerMask} onClick={closeMobileSider} />
-      <div className={styles.drawer}>
+      <div
+        className={clsx(styles.drawerMask, closing && styles.closingMask)}
+        onClick={closeMobileSider}
+      />
+      <div
+        className={clsx(styles.drawer, closing && styles.closingDrawer)}
+        onAnimationEnd={(event) => {
+          // 抽屉内部元素的动画会冒泡上来，只认抽屉自身这一次
+          if (closing && event.target === event.currentTarget) {
+            settleMobileSider()
+          }
+        }}
+      >
         <Sider mobile />
       </div>
     </>

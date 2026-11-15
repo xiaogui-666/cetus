@@ -1008,7 +1008,9 @@ const streamReply = async (sessionId: string, initial: AssistantMessage, request
             model: initial.model ?? MODEL,
             system: systemPrompt(),
             messages,
-            thinking: { type: initial.thinking ? 'enabled' : 'disabled' },
+            thinking: initial.thinking
+              ? { type: 'enabled', level: useSettings.getState().thinkingLevel }
+              : { type: 'disabled' },
             safety_check: SAFETY_CHECK,
             tools: serverTools(initial.search ?? false),
             ...(titleRequests.has(controller) ? { title: { enabled: true } } : {}),
