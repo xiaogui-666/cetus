@@ -1,10 +1,11 @@
 import { create } from 'zustand'
 import { createId } from '../../utils/id.js'
 import { ApiError, streamMessage } from '../api/client.js'
-import type { ChatModel, CreateMessageRequest } from '../api/types.js'
+import type { CreateMessageRequest } from '../api/types.js'
 import { extractFileIds, getFileErrorCode, isRetryableApiError } from '../api/errors.js'
 import { cancelUpload, describeUploadError, uploadAttachment, useUploads } from '../attachments.js'
 import { useSettings } from '../settings.js'
+import { currentApiKey, defaultModelId } from '../providers.js'
 import { appendBranch, getVisibleMessages, normalizeSession, selectVersion } from './branches.js'
 import * as db from './db.js'
 import {
@@ -32,8 +33,6 @@ import {
   type UserMessage,
 } from './types.js'
 
-/** deepseek-flash 同时支持深度思考与图片输入 */
-const MODEL: ChatModel = 'deepseek-flash'
 /** 所有生成请求统一携带的助手身份说明 */
 const SYSTEM_PROMPT = '该助手为DeepSeek，由深度求索公司创造。'
 
@@ -175,6 +174,11 @@ const updateSession = (id: string, update: (session: Session) => Session) =>
     }
   })
 
+/** 切换会话使用的模型，只影响之后的请求 */
+export const setSessionModel = (sessionId: string, model: string) => {
+  updateSession(sessionId, (session) => (session.model === model ? session : { ...session, model }))
+}
+
 const updateReply = (sessionId: string, reply: AssistantMessage) =>
   updateSession(sessionId, (session) => ({
     ...session,
@@ -266,7 +270,7 @@ const createReply = (): AssistantMessage => {
     id: createId(),
     role: 'assistant',
     createdAt: Date.now(),
-    model: MODEL,
+    model: defaultModelId(),
     thinking,
     search,
     prefix: true,
@@ -715,7 +719,7 @@ export const continueReply = (sessionId: string, messageId: string) => {
   const reply: AssistantMessage = {
     ...previous,
     // 未记录请求配置的回复，续写时使用默认模型和当前开关。
-    model: previous.model ?? MODEL,
+    model: previous.model ?? defaultModelId(),
     thinking: previous.thinking ?? thinking,
     search: previous.search ?? search,
     status: 'pending',
@@ -824,7 +828,7 @@ const prepareFiles = async (sessionId: string, request: Request, signal: AbortSi
   // 服务端判定 file_id 失效时会清掉会话里的 serverId，先用最新消息替换请求快照，
   // 否则快照里仍是旧 id，补传会直接复用它。
   request = refreshRequest(sessionId, request)
-  const apiKey = useSettings.getState().apiKey ?? ''
+  const apiKey = currentApiKey()
   const serverIds = new Map<string, string>()
   // 停止生成立即生效；上传本身不取消（输入框与其他消息可能共用同一任务），完成后照常写回 serverId
   const aborted = new Promise<never>((_, reject) => {
@@ -1003,9 +1007,9 @@ const streamReply = async (sessionId: string, initial: AssistantMessage, request
           latestReminder
         )
         const events = streamMessage(
-          useSettings.getState().apiKey ?? '',
+          currentApiKey(),
           {
-            model: initial.model ?? MODEL,
+            model: initial.model ?? defaultModelId(),
             system: systemPrompt(),
             messages,
             thinking: initial.thinking

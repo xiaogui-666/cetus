@@ -25,6 +25,8 @@ type Settings = {
   thinkingLevel: ThinkingLevel
   search: boolean
   siderCollapsed: boolean
+  /** 新对话默认使用的模型 id；null 时取当前供应商的第一个模型 */
+  model: string | null
 }
 
 const KEYS = {
@@ -38,6 +40,7 @@ const KEYS = {
   thinkingLevel: 'chat-demo:thinking-level',
   search: 'chat-demo:search',
   siderCollapsed: 'chat-demo:sider-collapsed',
+  model: 'chat-demo:model',
 } as const
 
 const read = (key: string) => {
@@ -114,6 +117,7 @@ export const useSettings = create<Settings>(() => ({
   thinkingLevel: initialThinkingLevel(),
   search: read(KEYS.search) === 'true',
   siderCollapsed: read(KEYS.siderCollapsed) === 'true',
+  model: read(KEYS.model) || null,
 }))
 
 export const setLocale = (locale: Locale) => {
@@ -165,4 +169,9 @@ export const setSiderCollapsed = (siderCollapsed: boolean) => {
 export const setUserName = (userName: string) => {
   write(KEYS.userName, userName.trim() || null)
   useSettings.setState({ userName: userName.trim() })
+}
+
+export const setModel = (model: string | null) => {
+  write(KEYS.model, model)
+  useSettings.setState({ model })
 }

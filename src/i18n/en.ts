@@ -20,6 +20,7 @@ export const en = {
   thinkingLevelMedium: 'Medium',
   thinkingLevelHigh: 'High',
   thinkingStrengthTitle: 'Reasoning effort',
+  settingsModel: 'Model',
   nicknameGateTitle: 'What should I call you?',
   nicknameGateDescription: 'Pick a name and I will greet you with it. Stored only on this device.',
   nicknameGatePlaceholder: 'e.g. Little Fish',

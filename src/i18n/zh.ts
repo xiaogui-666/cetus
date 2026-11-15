@@ -17,6 +17,7 @@ export const zh = {
   thinkingLevelMedium: '中等',
   thinkingLevelHigh: '高',
   thinkingStrengthTitle: '思考强度',
+  settingsModel: '模型',
   nicknameGateTitle: '怎么称呼你？',
   nicknameGateDescription: '起个名字，之后聊天时我会这样叫你。只保存在这台设备上。',
   nicknameGatePlaceholder: '比如：小鱼',
