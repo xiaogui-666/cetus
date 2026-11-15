@@ -11,7 +11,7 @@ import {
   type Provider,
 } from '../../services/providers.js'
 import { Button } from '../base/Button.js'
-import { IconCheckOutline16, IconEditOutline16 } from '../base/icons.js'
+import { IconCheckOutline16, IconEditOutline16, IconTrashOutline16 } from '../base/icons.js'
 import { Modal } from '../base/Modal.js'
 import styles from './ProviderSettings.module.css'
 
@@ -125,6 +125,11 @@ const ProviderEditor = ({
     setModels((prev) =>
       prev.map((model) => (model.id === id ? { ...model, ...patch } : model))
     )
+  }
+
+  /** 移除单个模型：拉回来的列表默认全带，用不上的在这里删掉 */
+  const removeModel = (id: string) => {
+    setModels((prev) => prev.filter((model) => model.id !== id))
   }
 
   const save = () => {
@@ -247,6 +252,14 @@ const ProviderEditor = ({
                   <option value="text">{t('providerKindText')}</option>
                   <option value="image">{t('providerKindImage')}</option>
                 </select>
+                <button
+                  type="button"
+                  className={styles.removeBtn}
+                  aria-label={t('providerModelRemove')}
+                  onClick={() => removeModel(model.id)}
+                >
+                  <IconTrashOutline16 />
+                </button>
               </div>
               <div className={styles.modelBottom}>
                 <code className={styles.modelId}>{model.id}</code>

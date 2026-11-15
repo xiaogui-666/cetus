@@ -21,6 +21,7 @@ declare const styles: {
   readonly "modelTop": string;
   readonly "modelName": string;
   readonly "modelKind": string;
+  readonly "removeBtn": string;
   readonly "modelBottom": string;
   readonly "modelId": string;
   readonly "check": string;

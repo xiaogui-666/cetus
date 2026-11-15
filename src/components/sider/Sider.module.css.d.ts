@@ -1,6 +1,8 @@
 declare const styles: {
   readonly "sider": string;
   readonly "top": string;
+  readonly "brand": string;
+  readonly "logo": string;
   readonly "appName": string;
   readonly "newChat": string;
   readonly "newChatIcon": string;
@@ -10,13 +12,15 @@ declare const styles: {
   readonly "sectionHeader": string;
   readonly "bottom": string;
   readonly "settings": string;
+  readonly "avatar": string;
   readonly "settingsIcon": string;
   readonly "settingsLabel": string;
   readonly "collapsed": string;
   readonly "collapsedGroup": string;
   readonly "drawer": string;
   readonly "drawerMask": string;
+  readonly "closingDrawer": string;
+  readonly "closingMask": string;
   readonly "mobile": string;
 };
 export = styles;
-

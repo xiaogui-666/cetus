@@ -157,6 +157,25 @@ export const getActiveProvider = (): Provider => {
 }
 
 /**
+ * 归一化用户填写的接口地址。
+ *
+ * 常见误填：OpenAI 风格的 `https://api.deepseek.com/v1`、Anthropic 风格的
+ * `https://api.deepseek.com/anthropic/v1`。都还原成根地址，之后统一拼
+ * `/anthropic/v1` 与 `/models`，避免拼出 `/v1/anthropic/v1/messages`。
+ */
+export const normalizeBaseUrl = (value: string): string => {
+  let base = value.trim().replace(/\/+$/, '')
+  for (let i = 0; i < 3; i += 1) {
+    const next = base.replace(/\/(anthropic\/v1|anthropic|v1)$/i, '')
+    if (next === base) {
+      break
+    }
+    base = next
+  }
+  return base.replace(/\/+$/, '')
+}
+
+/**
  * 当前可用的 API Key：供应商里的优先，空时回落到旧设置字段。
  * 旧字段在保存 Key 时会同步写一次，迁移期两边保持一致。
  */

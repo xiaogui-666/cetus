@@ -32,6 +32,7 @@ export const zh = {
   providerKindImage: '图像',
   providerVision: '多模态',
   providerThinking: '深度思考',
+  providerModelRemove: '移除这个模型',
   providerUntitled: '未命名供应商',
   save: '保存',
   thinkingOff: '关闭',
@@ -42,6 +43,10 @@ export const zh = {
   thinkingReset: '重置',
   back: '返回',
   settingsModel: '模型',
+  introTitle: 'Cetus · 鲸屿',
+  introBody:
+    '一个不用注册的 AI 聊天客户端。\n\n带上你自己的 API Key，聊完就走。没有账号，没有云同步，没有统计——所有对话都躺在你这台设备里，删掉就是真的删掉了。\n\n联网、读链接、看文件、语音、深度思考，这些是官方 API 本来就有的本事，我只是把它们接了出来。\n\n2026 年 11 月，第一版。',
+  introStart: '先看看',
   nicknameGateTitle: '怎么称呼你？',
   nicknameGateDescription: '起个名字，之后聊天时我会这样叫你。只保存在这台设备上。',
   nicknameGatePlaceholder: '比如：小鱼',

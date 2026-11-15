@@ -35,6 +35,7 @@ export const en = {
   providerKindImage: 'Image',
   providerVision: 'Vision',
   providerThinking: 'Thinking',
+  providerModelRemove: 'Remove this model',
   providerUntitled: 'Untitled provider',
   save: 'Save',
   thinkingOff: 'Off',
@@ -45,6 +46,10 @@ export const en = {
   thinkingReset: 'Reset',
   back: 'Back',
   settingsModel: 'Model',
+  introTitle: 'Cetus',
+  introBody:
+    'An AI chat client that needs no account.\n\nBring your own API key, chat, leave. No sign-up, no cloud sync, no analytics — every conversation stays on this device, and deleting it really deletes it.\n\nWeb search, link reading, file input, voice and reasoning are capabilities the official API already has. This app just puts a UI on them.\n\nNovember 2026. Version one.',
+  introStart: 'Take a look',
   nicknameGateTitle: 'What should I call you?',
   nicknameGateDescription: 'Pick a name and I will greet you with it. Stored only on this device.',
   nicknameGatePlaceholder: 'e.g. Little Fish',

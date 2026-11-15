@@ -23,6 +23,20 @@
   flex-shrink: 0;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.logo {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  color: var(--cetus-logo-color, currentColor);
+}
+
 .appName {
   min-width: 0;
   padding-left: 4px;

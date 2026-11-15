@@ -18,8 +18,8 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 380px;
-  padding: 34px 26px 18px;
+  max-width: 400px;
+  padding: 34px 26px 20px;
   border-radius: 26px;
   background: var(--dsw-alias-bg-layer-2);
   box-shadow:
@@ -43,11 +43,20 @@
 }
 
 .title {
-  margin: 0 0 8px;
+  margin: 0 0 12px;
   font-size: 21px;
   line-height: 28px;
   font-weight: 600;
   color: var(--dsw-alias-label-primary);
+}
+
+.body {
+  margin: 0 0 22px;
+  font-size: 13.5px;
+  line-height: 22px;
+  text-align: left;
+  white-space: pre-line;
+  color: var(--dsw-alias-label-secondary);
 }
 
 .description {
@@ -72,15 +81,15 @@
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease;
-}
 
-.input::placeholder {
-  color: var(--dsw-alias-label-tertiary);
-}
+  &::placeholder {
+    color: var(--dsw-alias-label-tertiary);
+  }
 
-.input:focus {
-  border-color: var(--dsw-alias-brand-primary);
-  box-shadow: 0 0 0 3px rgba(57, 100, 254, 0.12);
+  &:focus {
+    border-color: var(--dsw-alias-brand-primary);
+    box-shadow: 0 0 0 3px rgba(57, 100, 254, 0.12);
+  }
 }
 
 .primary {
@@ -98,32 +107,32 @@
   transition:
     opacity 0.18s ease,
     transform 0.18s ease;
-}
 
-.primary:active:not(:disabled) {
-  transform: scale(0.985);
-}
+  &:active:not(:disabled) {
+    transform: scale(0.985);
+  }
 
-.primary:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
 }
 
 .skip {
   margin-top: 6px;
   padding: 10px 12px;
   border: none;
+  border-radius: 100px;
   background: none;
   color: var(--dsw-alias-label-tertiary);
   font: inherit;
   font-size: 13px;
   cursor: pointer;
-  border-radius: 100px;
   transition: color 0.18s ease;
-}
 
-.skip:hover {
-  color: var(--dsw-alias-label-secondary);
+  &:hover {
+    color: var(--dsw-alias-label-secondary);
+  }
 }
 
 @keyframes gateFadeIn {
@@ -148,13 +157,32 @@
 }
 
 @media not all and (min-width: 768px) {
+  .gate {
+    align-items: flex-end;
+    padding: 0;
+  }
+
   .card {
-    padding: 30px 22px 14px;
-    border-radius: 24px;
+    max-width: none;
+    padding: 28px 22px calc(18px + env(safe-area-inset-bottom));
+    border-radius: 24px 24px 0 0;
+    animation: sheetUp 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .logo {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 14px;
   }
 
   .primary,
   .skip {
     min-height: 46px;
+  }
+}
+
+@keyframes sheetUp {
+  from {
+    transform: translateY(100%);
   }
 }

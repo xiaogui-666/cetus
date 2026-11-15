@@ -66,3 +66,48 @@
   gap: 8px;
   margin-top: 20px;
 }
+
+/*
+ * 移动端改成底部弹层：贴着屏幕底边、只有上方两个角是圆的，
+ * 和 DeepSeek 官方 App 的弹窗范式保持一致。
+ */
+@media not all and (min-width: 768px) {
+  .overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .content {
+    width: 100%;
+    max-width: none;
+    max-height: 88dvh;
+    padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+    border-radius: 24px 24px 0 0;
+    animation: sheetUp 0.26s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .main {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .footer {
+    margin-top: 18px;
+  }
+
+  .footer > * {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    animation: none;
+  }
+}
+
+@keyframes sheetUp {
+  from {
+    transform: translateY(100%);
+  }
+}

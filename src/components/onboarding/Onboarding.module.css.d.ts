@@ -3,6 +3,7 @@ declare const styles: {
   readonly "card": string;
   readonly "logo": string;
   readonly "title": string;
+  readonly "body": string;
   readonly "description": string;
   readonly "input": string;
   readonly "primary": string;

@@ -246,6 +246,27 @@
   font-size: 13px;
 }
 
+/* 移除不想要的模型：拉取后默认全带，按需删 */
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--dsw-alias-interactive-bg-hover-danger);
+    color: var(--dsw-alias-state-error-primary);
+  }
+}
+
 .modelBottom {
   display: flex;
   flex-wrap: wrap;

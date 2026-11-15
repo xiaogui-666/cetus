@@ -9,13 +9,14 @@ import type {
   MessageStreamEvent,
 } from './types.js'
 
-import { getActiveProvider } from '../providers.js'
+import { getActiveProvider, normalizeBaseUrl } from '../providers.js'
 
 /**
- * 当前供应商的 API 根地址，去掉末尾斜杠。
+ * 当前供应商的 API 根地址（已归一化，去掉末尾斜杠与误填的 /v1、/anthropic）。
  * 每次请求实时读取，切换供应商后无需刷新页面。
  */
-export const apiOrigin = (): string => getActiveProvider().baseUrl.replace(/\/+$/, '')
+export const apiOrigin = (): string =>
+  normalizeBaseUrl(getActiveProvider().baseUrl) || 'https://api.deepseek.com'
 /** Anthropic 兼容接口的前缀 */
 const anthropicBaseUrl = (): string => `${apiOrigin()}/anthropic/v1`
 /** 引用 Files API 上传的图片、调用 Anthropic 兼容 Files API 时必须携带 */
@@ -112,7 +113,7 @@ export const fetchModels = async (
   apiKey: string,
   signal?: AbortSignal
 ): Promise<string[]> => {
-  const origin = baseUrl.trim().replace(/\/+$/, '')
+  const origin = normalizeBaseUrl(baseUrl) || 'https://api.deepseek.com'
   const response = await request(`${origin}/models`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${apiKey}` },
